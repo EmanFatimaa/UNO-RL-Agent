@@ -15,7 +15,7 @@ WHITE = (255,255,255)
 BLACK = (0,0,0)
 GREEN = (34,139,34)
 BLUE = (70,130,180)
-YELLOW = (255,215,0)
+ORANGE = (255,140,0)
 RED = (200,50,50)
 
 class StartMenu:
@@ -84,8 +84,8 @@ class StartMenu:
             self.screen.blit(title, (WINDOW_WIDTH//2 - title.get_width()//2, 100))
 
             # Draw buttons
-            self.draw_button(self.btn_player_vs_ai, "Player vs AI", BLUE)
-            self.draw_button(self.btn_ai_vs_ai,   "AI vs AI", YELLOW)
+            self.draw_button(self.btn_player_vs_ai, "Human vs AI", BLUE)
+            self.draw_button(self.btn_ai_vs_ai,   "AI vs AI", ORANGE)
             self.draw_button(self.btn_multiplayer, "Multiplayer", RED)
 
             pygame.display.flip()
