@@ -1,4 +1,5 @@
-# multiplayer_game.py
+# This file contains the full multiplayer UNO game engine, handling all rules, turn order, card effects, draws, skips, reverses, and win detection (but no graphics).
+
 import random
 from collections import deque
 from uno_game import Color, CardType, Card  # reuse Card, Color, CardType

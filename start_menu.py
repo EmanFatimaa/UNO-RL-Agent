@@ -1,4 +1,6 @@
-# start_menu.py
+# This file creates the main menu screen for your UNO project using Pygame.
+#lets the player choose what type of UNO game to play: Human vs AI, AI vs AI, or Multiplayer and then it loads the correct game module.
+
 import pygame
 import sys
 

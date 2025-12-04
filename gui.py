@@ -1,8 +1,4 @@
-
-"""
-CORRECTED GUI with proper action card feedback
-Shows when cards are drawn, turns are skipped, etc.
-"""
+# This file is the full Human-vs-AI UNO GUI that displays the game state, handles user clicks, chooses AI moves, shows action-card effects, and provides training/testing tools for Q-learning agent.
 
 import pygame
 import sys

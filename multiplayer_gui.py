@@ -1,4 +1,6 @@
-# multiplayer_gui.py
+# This file creates the visual multiplayer version of UNO (2–4 players).
+# It connects the Pygame GUI to your MultiplayerGame logic.
+
 import pygame, sys, time
 from multiplayer_game import MultiplayerGame
 from uno_game import Color, CardType
