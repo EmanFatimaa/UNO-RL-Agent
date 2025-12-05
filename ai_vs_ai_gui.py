@@ -511,7 +511,7 @@ class AIVsAIGUI:
         """
         num_agents = self.num_players
         all_results = []
-
+        self.game_counts=game_counts
         for games in game_counts:
             wins = {i: 0 for i in range(num_agents)}
             print(f"\nRunning simulation for {games} games...")
@@ -558,7 +558,7 @@ class AIVsAIGUI:
         num_agents = len(agent_names)
         num_batches = len(results)
 
-        x = list(range(1, num_batches + 1))
+        x = self.game_counts
         agent_wins = {i: [] for i in range(num_agents)}
 
         for batch in results:
@@ -577,7 +577,7 @@ class AIVsAIGUI:
             )
 
         plt.title("Win Progression Over Increasing Game Batches", fontsize=14)
-        plt.xlabel("Batch Number", fontsize=12)
+        plt.xlabel("Episodes", fontsize=12)
         plt.ylabel("Wins", fontsize=12)
         plt.grid(True, alpha=0.3)
         plt.legend()
