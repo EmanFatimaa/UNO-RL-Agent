@@ -224,23 +224,68 @@ class AIVsAIGUI:
             text_rect = text_surface.get_rect(center=(x + CARD_WIDTH // 2, y + CARD_HEIGHT // 2))
             self.screen.blit(text_surface, text_rect)
 
-    def draw_player_hand(self, player_index, y_pos, face_up=True):
+    def compute_hand_layout(self, player_index):
         """
-        Draw the player's hand centered horizontally.
+        Compute card positions for each player in corner-based layout.
+        Same algorithm as multiplayer_gui.py for consistency.
+        """
+        hand = self.game.hands[player_index]
+        n = len(hand)
+        
+        # Spacing between cards
+        spacing = 90
+        
+        # Compute available width per corner
+        half_width = WINDOW_WIDTH // 2 - 80
+        max_allowed = min(half_width - 40, 6 * CARD_WIDTH)
+        
+        if n <= 1:
+            total_width = CARD_WIDTH
+        else:
+            spacing = min(90, max(20, (max_allowed - CARD_WIDTH) // (n - 1)))
+            total_width = CARD_WIDTH + (n - 1) * spacing
+        
+        # Determine Y position (top or bottom)
+        if player_index in (0, 1):  # top row
+            y = 120
+        else:  # bottom row
+            y = WINDOW_HEIGHT - 180
+        
+        # Determine X position (left or right)
+        if self.num_players == 2:
+            # Center both hands
+            start_x = (WINDOW_WIDTH - total_width) // 2
+        elif self.num_players == 3:
+            if player_index == 0:  # top-left
+                start_x = 40
+            elif player_index == 1:  # top-right
+                start_x = WINDOW_WIDTH - total_width - 40
+            else:  # player 2: bottom-left
+                start_x = 40
+        elif self.num_players == 4:
+            if player_index in (0, 2):  # left side
+                start_x = 40
+            else:  # right side
+                start_x = WINDOW_WIDTH - total_width - 40
+        else:
+            start_x = (WINDOW_WIDTH - total_width) // 2
+        
+        return start_x, y, spacing
+
+    def draw_player_hand(self, player_index, face_up=True):
+        """
+        Draw the player's hand using corner-based layout.
         Note: For AI vs AI we show all hands face-up for observation.
         """
         hand = self.game.hands[player_index]
         if len(hand) == 0:
             return
-
-        spacing = 90
-        total_width = max(len(hand) * spacing, CARD_WIDTH)
-        start_x = (WINDOW_WIDTH - total_width) // 2
-
+        
+        start_x, y, spacing = self.compute_hand_layout(player_index)
+        
         for i, card in enumerate(hand):
             x = start_x + i * spacing
-            # highlight flag set to False intentionally (no highlighting)
-            self.draw_card(card, x, y_pos, face_up=face_up, highlight=False)
+            self.draw_card(card, x, y, face_up=face_up, highlight=False)
 
     def draw_discard_pile(self):
         """
@@ -652,30 +697,25 @@ class AIVsAIGUI:
             # Draw stats box
             self.draw_stats()
 
-            # Draw hands layout according to number of players
-            if self.num_players == 2:
-                # Top player
-                self.draw_player_hand(0, 120, face_up=True)
-                # Bottom player
-                self.draw_player_hand(1, WINDOW_HEIGHT - 180, face_up=True)
+            # Draw all player hands using corner-based layout
+            for p in range(self.num_players):
+                self.draw_player_hand(p, face_up=True)
 
-                # Labels with clearer alignment
-                p1_label = self.small_font.render(f"P1 ({self.agent_names[0]}): {len(self.game.hands[0])} cards", True, WHITE)
-                p2_label = self.small_font.render(f"P2 ({self.agent_names[1]}): {len(self.game.hands[1])} cards", True, WHITE)
-                self.screen.blit(p1_label, (20, 90))
-                self.screen.blit(p2_label, (20, WINDOW_HEIGHT - 210))
-
-            elif self.num_players == 3:
-                self.draw_player_hand(0, 120, face_up=True)
-                self.draw_player_hand(1, WINDOW_HEIGHT // 2 - 60, face_up=True)
-                self.draw_player_hand(2, WINDOW_HEIGHT - 180, face_up=True)
-
-            elif self.num_players == 4:
-                # For 4 players we display two rows of hands
-                self.draw_player_hand(0, 120, face_up=True)
-                self.draw_player_hand(1, 120, face_up=True)
-                self.draw_player_hand(2, WINDOW_HEIGHT - 180, face_up=True)
-                self.draw_player_hand(3, WINDOW_HEIGHT - 180, face_up=True)
+            # Draw labels for each player
+            for p in range(self.num_players):
+                start_x, y, spacing = self.compute_hand_layout(p)
+                hand_size = len(self.game.hands[p])
+                
+                label_text = f"P{p+1} ({self.agent_names[p]}): {hand_size} cards"
+                label_surf = self.small_font.render(label_text, True, WHITE)
+                
+                # Position labels above or below cards
+                if p in (0, 1):  # top row - label above
+                    label_y = y - 22
+                else:  # bottom row - label below
+                    label_y = y + CARD_HEIGHT + 8
+                
+                self.screen.blit(label_surf, (start_x, label_y))
 
             # Turn indicator (center top)
             current = getattr(self.game, "current_player", 0)
