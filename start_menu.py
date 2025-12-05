@@ -5,7 +5,7 @@ import pygame
 import sys
 
 # Import game modes
-from gui import UnoGUI                      # Player vs AI (your existing GUI)
+from gui import UnoGUI                      # Player vs AI (existing GUI)
 from ai_vs_ai_gui import AIVsAIGUI         # AI vs AI mode
 from multiplayer_gui import MultiplayerGUI # Multiplayer 2–4 players
 
@@ -23,7 +23,7 @@ RED = (200,50,50)
 class StartMenu:
     def __init__(self):
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("UNO - Select Mode")
+        pygame.display.set_caption("SMART UNO - RL AGENT")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 50)
         self.small_font = pygame.font.Font(None, 30)

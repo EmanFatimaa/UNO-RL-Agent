@@ -439,13 +439,13 @@ class UnoGUI:
 
             # Action card messages
             if card.card_type == CardType.DRAW_TWO:
-                self.show_action_effect("💥 AI played +2! You must draw 2!")
+                self.show_action_effect("AI played +2! You must draw 2!")
             elif card.card_type == CardType.WILD_DRAW_FOUR:
-                self.show_action_effect("💥💥 AI played +4! You draw 4!")
+                self.show_action_effect("AI played +4! You draw 4!")
             elif card.card_type == CardType.SKIP:
-                self.show_action_effect("⏭️ AI played Skip! Your turn skipped!")
+                self.show_action_effect("AI played Skip! Your turn skipped!")
             elif card.card_type == CardType.REVERSE:
-                self.show_action_effect("🔄 AI played Reverse!")
+                self.show_action_effect("AI played Reverse!")
 
             self.show_notification(f"AI played {card}", LIGHT_GRAY)
 

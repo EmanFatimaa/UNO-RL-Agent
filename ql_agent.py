@@ -1,10 +1,3 @@
-"""
-Corrected Q-Learning agent module for UNO
-- Backwards-compatible with GUI expectations
-- Provides RandomAgent and HeuristicAgent
-- Training helpers accept an agent instance (GUI passes its agent)
-"""
-
 # This file contains the RL agent (Q-Learning agent) PLUS two simple opponents (Random and Heuristic) that the GUI expects.
 
 import random
@@ -16,7 +9,7 @@ from typing import Optional
 # Q-Learning Agent
 # ---------------------------------------------------------
 class QLearningAgent:
-    def __init__(self, alpha=0.1, gamma=0.9, epsilon=0.2, name="QLearning", epsilon_min=0.05, epsilon_decay=0.9995):
+    def __init__(self, alpha = 0.1, gamma= 0.9, epsilon= 0.2, name= "QLearning", epsilon_min = 0.05, epsilon_decay = 0.9995):
         """
         alpha: learning rate
         gamma: discount factor
@@ -43,7 +36,7 @@ class QLearningAgent:
     def state_to_key(self, state):
         """
         Create a compact, hashable state key from the state dictionary.
-        This function is defensive: it accepts multiple possible key names
+        This function accepts multiple possible key names
         produced by different versions of UnoGame.
         Expected fields used (if present):
           - 'hand' : list of Card
