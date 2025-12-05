@@ -107,7 +107,7 @@ class StartMenu:
 
                     # AI VS AI — run NPC-npc battle
                     if self.btn_ai_vs_ai.collidepoint((mx,my)):
-                        game = AIVsAIGUI(num_players=2, base_move_delay=0.5)
+                        game = AIVsAIGUI(num_players=3, base_move_delay=0.5)
                         game.run()
 
                     # MULTIPLAYER — ask player count then start

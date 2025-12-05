@@ -19,7 +19,11 @@ import pygame
 import sys
 import random
 import time
-
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg
+import numpy as np
 # Local project imports (must exist in your project)
 from multiplayer_game import MultiplayerGame
 from ql_agent import RandomAgent, HeuristicAgent, QLearningAgent
@@ -29,8 +33,8 @@ from uno_game import Color, CardType
 pygame.init()
 
 # -------------------- Window & appearance constants --------------------
-WINDOW_WIDTH = 1400
-WINDOW_HEIGHT = 900
+WINDOW_WIDTH = 1200
+WINDOW_HEIGHT = 700
 FPS = 30
 
 # Colors (same palette as your main GUI for visual consistency)
@@ -132,6 +136,8 @@ class AIVsAIGUI:
         btn_w = 140
         btn_h = 44
         gap = 12
+        # NEW: Plot Graphs button (bottom right corner)
+        self.plot_button_rect = pygame.Rect(WINDOW_WIDTH - 160, WINDOW_HEIGHT - 60, 140, 44)
         # Back button (top-left)
         self.back_button_rect = pygame.Rect(20, top_y, 120, 40)
         # End game (center-left)
@@ -498,7 +504,89 @@ class AIVsAIGUI:
         # If StartMenu().run() ever returns, exit to be safe
         sys.exit(0)
 
-    # -------------------- Main loop --------------------
+    def run_simulation_batches(self, game_counts=[5000,10000,15000,20000]):
+        """
+        Run AI vs AI simulations for different game counts.
+        Returns: list of dicts [{0: wins, 1: wins}, ...]
+        """
+        num_agents = self.num_players
+        all_results = []
+
+        for games in game_counts:
+            wins = {i: 0 for i in range(num_agents)}
+            print(f"\nRunning simulation for {games} games...")
+
+            for _ in range(games):
+                game = MultiplayerGame(num_agents)
+                while not game.game_over:
+                    cp = game.current_player
+                    state = game.get_state_for_ai(cp)
+                    valid = game.get_valid_cards(cp)
+
+                    if valid:
+                        action_index = self.agents[cp].choose_action(state, valid)
+                        card = game.hands[cp][action_index]
+
+                        if card.color == Color.WILD:
+                            chosen_color = game.choose_color_for_wild(cp)
+                            game.play_card(cp, action_index, chosen_color)
+                        else:
+                            game.play_card(cp, action_index)
+                    else:
+                        pending = getattr(game, "pending_draw", 0)
+                        if pending > 0:
+                            game.draw_multiple_cards(cp, pending)
+                            game.pending_draw = 0
+                        else:
+                            game.draw_card(cp)
+
+                    if not game.game_over:
+                        game.switch_turn()
+
+                winner = getattr(game, "winner", 0)
+                wins[winner] += 1
+
+            all_results.append(wins)
+            print("Batch result:", wins)
+
+        print("\nAll Results:", all_results)
+        return all_results
+    def plot_results(self, results, agent_names=["Q-Learning", "Random","heuristic"]):
+        """
+        Plots results: [{0: wins, 1: wins}, ...]
+        """
+        num_agents = len(agent_names)
+        num_batches = len(results)
+
+        x = list(range(1, num_batches + 1))
+        agent_wins = {i: [] for i in range(num_agents)}
+
+        for batch in results:
+            for i, wins in batch.items():
+                agent_wins[i].append(wins)
+
+        plt.figure(figsize=(10, 6))
+
+        for i in agent_wins:
+            plt.plot(
+                x,
+                agent_wins[i],
+                marker='o',
+                linewidth=2,
+                label=agent_names[i]
+            )
+
+        plt.title("Win Progression Over Increasing Game Batches", fontsize=14)
+        plt.xlabel("Batch Number", fontsize=12)
+        plt.ylabel("Wins", fontsize=12)
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+    def plotting(self):
+        results = self.run_simulation_batches()
+        self.plot_results(results)
+
     def run(self):
         """Main Pygame loop for AI vs AI mode."""
         running = True
@@ -519,7 +607,10 @@ class AIVsAIGUI:
                         self.handle_back_to_start()
                         # handle_back_to_start will not return normally
                         continue
-
+                    # Inside the MOUSEBUTTONDOWN event handling:
+                    if self.plot_button_rect.collidepoint((mx, my)):
+                        self.plotting()
+                        continue
                     # NEW GAME -> reset engine & UNO GUI trackers
                     if self.new_game_button_rect.collidepoint((mx, my)):
                         self.game.reset()
@@ -549,6 +640,8 @@ class AIVsAIGUI:
 
             # Draw discard/deck area & info box
             self.draw_discard_pile()
+            # After drawing other buttons:
+            self.draw_button(self.plot_button_rect, "PLOT GRAPHS", ORANGE)
 
             # Top bar buttons (consistent alignment)
             self.draw_button(self.back_button_rect, "BACK", PURPLE)
