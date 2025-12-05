@@ -1,20 +1,3 @@
-# ai_vs_ai_gui.py
-# Updated AI vs AI GUI for UNO
-# - Back button returns to StartMenu (import & run)
-# - Slower speeds (0.1x, 0.25x, 0.5x, 1.0x, 2.0x)
-# - UNO rule enforcement (must "say UNO" on second-last -> else +2 penalty)
-# - Removed playable-card highlighting
-# - Fixed button alignment and layout
-# - Detailed comments & explanations, including "white box" meaning
-#
-# NOTE: This file assumes these modules exist and expose the used methods:
-#   - multiplayer_game.MultiplayerGame
-#   - ql_agent.RandomAgent, HeuristicAgent, QLearningAgent
-#   - uno_game.Color, CardType
-#
-# If your implementations use different method names/attributes, you may need
-# small adjustments (comments point where those would be needed).
-
 import pygame
 import sys
 import random
@@ -33,8 +16,8 @@ from uno_game import Color, CardType
 pygame.init()
 
 # -------------------- Window & appearance constants --------------------
-WINDOW_WIDTH = 1200
-WINDOW_HEIGHT = 700
+WINDOW_WIDTH = 1400
+WINDOW_HEIGHT = 900
 FPS = 30
 
 # Colors (same palette as your main GUI for visual consistency)
@@ -80,7 +63,7 @@ class AIVsAIGUI:
 
         # Pygame window and fonts
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("UNO - AI vs AI")
+        pygame.display.set_caption("SMART UNO - RL AGENT")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 36)
         self.small_font = pygame.font.Font(None, 24)
@@ -148,7 +131,7 @@ class AIVsAIGUI:
         self.speed_button_rect = pygame.Rect(WINDOW_WIDTH - btn_w - 20, top_y, btn_w, btn_h)
 
         # Stats rectangle (right area)
-        self.stats_rect = pygame.Rect(WINDOW_WIDTH - 280, 130, 260, 220)
+        self.stats_rect = pygame.Rect(WINDOW_WIDTH - 260, 170, 260, 220)
 
         # Deck/discard center-left area rectangle (for convenient reference)
         self.deck_rect = pygame.Rect(
@@ -737,7 +720,7 @@ class AIVsAIGUI:
                 self.screen.blit(overlay, (0, 0))
 
                 winner_idx = getattr(self.game, "winner", 0)
-                winner_text = f"🎉 P{winner_idx + 1} ({self.agent_names[winner_idx]}) WINS! 🎉"
+                winner_text = f" P{winner_idx + 1} ({self.agent_names[winner_idx]}) WINS!"
                 text = self.font.render(winner_text, True, (0, 255, 0))
                 text_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
                 self.screen.blit(text, text_rect)

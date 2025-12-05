@@ -32,7 +32,7 @@ class UnoGUI:
     
     def __init__(self):
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("UNO - CORRECTED Q-Learning AI")
+        pygame.display.set_caption("SMART UNO - RL AGENT")
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 36)
         self.small_font = pygame.font.Font(None, 24)
@@ -75,7 +75,7 @@ class UnoGUI:
         self.opponent_button_rect = pygame.Rect(WINDOW_WIDTH - 340, 20, 150, 40)
 
         # Stats (moved down)
-        self.stats_rect = pygame.Rect(WINDOW_WIDTH - 260, 150, 240, 160)
+        self.stats_rect = pygame.Rect(WINDOW_WIDTH - 260, 300, 240, 200)
 
         # Deck rect (necessary!)
         self.deck_rect = pygame.Rect(
@@ -253,7 +253,7 @@ class UnoGUI:
         #     self.screen.blit(text, (self.stats_rect.x + 10, self.stats_rect.y + 10 + i * 19))
         for i, line in enumerate(stats_lines):
             text = self.tiny_font.render(line, True, BLACK)
-            self.screen.blit(text, (self.stats_rect.x + 10, self.stats_rect.y + 8 + i * 16))
+            self.screen.blit(text, (self.stats_rect.x + 10, self.stats_rect.y + 10 + i * 16))
 
     
     def draw_notification(self):
@@ -488,105 +488,6 @@ class UnoGUI:
                     self.show_notification(f"AI played drawn {card}", LIGHT_GRAY)
 
             self.game.switch_turn()
-
-    # def handle_player_turn(self, mouse_pos, card_rects, valid_cards):
-    #     for i, rect in enumerate(card_rects):
-    #         if rect.collidepoint(mouse_pos):
-    #             card = self.game.player_hand[i]
-                
-    #             if card.can_play_on(self.game.get_top_card(), self.game.current_color):
-    #                 if card.color == Color.WILD:
-    #                     self.selected_card = i
-    #                     self.choosing_color = True
-    #                     self.show_notification("Choose a color!", LIGHT_GRAY, 60)
-    #                 else:
-    #                     if self.game.play_card(0, i):
-    #                         # Show action card effect
-    #                         if card.card_type == CardType.DRAW_TWO:
-    #                             self.show_action_effect("💥 You played +2! AI must draw 2 cards!")
-    #                         elif card.card_type == CardType.SKIP:
-    #                             self.show_action_effect("⏭️ You played Skip! AI's turn skipped!")
-    #                             # self.game.switch_turn()  # Skip 1 turn
-    #                         elif card.card_type == CardType.REVERSE:
-    #                             self.show_action_effect("🔄 You played Reverse!")
-    #                             # self.game.switch_turn()  # Skip 1 turn
-                            
-    #                         self.show_notification(f"You played {card}!", GREEN, 60)
-    #                         if not self.game.game_over:
-    #                             self.game.switch_turn()
-    #                             self.ai_delay = 40
-    #             else:
-    #                 self.show_notification("Invalid card! Must match color/number", RED, 90)
-    #             return
-        
-    #     if self.deck_rect.collidepoint(mouse_pos):
-    #         if self.game.pending_draw > 0:
-    #             drawn = self.game.draw_multiple_cards(0, self.game.pending_draw)
-    #             self.show_notification(f"Drew {self.game.pending_draw} cards!", RED, 90)
-    #             self.game.pending_draw = 0
-    #         # else:
-    #         #     drawn = self.game.draw_card(0)
-    #         #     if drawn:
-    #         #         self.show_notification(f"Drew: {drawn}", LIGHT_GRAY, 60)
-    #         # self.game.switch_turn()
-    #         # self.ai_delay = 40
-    #         else:
-    #             drawn = self.game.draw_card(0)
-    #             if drawn:
-    #                 self.show_notification(f"Drew: {drawn}", LIGHT_GRAY, 60)
-                    
-    #                 # NEW RULE: if drawn card is playable, allow playing it
-    #                 if drawn.can_play_on(self.game.get_top_card(), self.game.current_color):
-    #                     self.show_notification("You can play the drawn card!", GREEN, 60)
-    #                     # Let player choose if they want to play it
-    #                     self.selected_card = len(self.game.player_hand) - 1  # index of drawn card
-    #                     return
-
-    
-    # def handle_ai_turn(self):
-    #     if self.ai_delay > 0:
-    #         self.ai_delay -= 1
-    #         return
-        
-    #     current_opponent = self.opponents[self.opponent_type]
-    #     state = self.game.get_state_for_ai(perspective_player=1)
-    #     valid_actions = self.game.get_valid_cards(self.game.ai_hand)
-        
-    #     if valid_actions:
-    #         action = current_opponent.choose_action(state, valid_actions)
-    #         card = self.game.ai_hand[action]
-            
-    #         if card.color == Color.WILD:
-    #             chosen_color = self.game.choose_color_for_wild(self.game.ai_hand)
-    #             self.game.play_card(1, action, chosen_color)
-    #             self.show_notification(f"AI: {card.card_type.name}, chose {chosen_color.name}", LIGHT_GRAY)
-    #         else:
-    #             self.game.play_card(1, action)
-                
-    #             # Show AI action effects
-    #             if card.card_type == CardType.DRAW_TWO:
-    #                 self.show_action_effect("💥 AI played +2! You must draw 2 cards!")
-    #             elif card.card_type == CardType.WILD_DRAW_FOUR:
-    #                 self.show_action_effect("💥💥 AI played +4! You must draw 4 cards!")
-    #             elif card.card_type == CardType.SKIP:
-    #                 self.show_action_effect("⏭️ AI played Skip! Your turn skipped!")
-
-    #             elif card.card_type == CardType.REVERSE:
-    #                 self.show_action_effect("🔄 AI played Reverse!")
-                
-    #             self.show_notification(f"AI played {card}", LIGHT_GRAY)
-            
-    #         if not self.game.game_over:
-    #             self.game.switch_turn()
-    #     else:
-    #         if self.game.pending_draw > 0:
-    #             self.game.draw_multiple_cards(1, self.game.pending_draw)
-    #             self.show_notification(f"AI drew {self.game.pending_draw} cards!", LIGHT_GRAY)
-    #             self.game.pending_draw = 0
-    #         else:
-    #             self.game.draw_card(1)
-    #             self.show_notification("AI drew a card", LIGHT_GRAY)
-    #         self.game.switch_turn()
     
     def run_training(self, num_episodes=1000, curriculum=False):
         self.training_mode = True
@@ -692,10 +593,10 @@ class UnoGUI:
             
             self.draw_discard_pile()
             self.draw_button(self.train_button_rect, "TRAIN AI\n(1000 games)", PURPLE)
-            self.draw_button(self.train_curriculum_rect, "CURRICULUM\n(5000 games)", (100, 50, 150))
+            self.draw_button(self.train_curriculum_rect, "CURRICULUM\n(4000 games)", (100, 50, 150))
             self.draw_button(self.new_game_button_rect, "NEW GAME")
             self.draw_button(self.end_game_button_rect,"END GAME")
-            self.draw_button(self.toggle_q_button_rect, f"Q-VALUES\n({'ON' if self.show_q_values else 'OFF'})", ORANGE)
+            # self.draw_button(self.toggle_q_button_rect, f"Q-VALUES\n({'ON' if self.show_q_values else 'OFF'})", ORANGE)
             self.draw_button(self.opponent_button_rect, f"OPPONENT:\n{self.opponent_type[:8].upper()}", CYAN)
             self.draw_stats()
             
@@ -729,7 +630,7 @@ class UnoGUI:
                 overlay.fill(BLACK)
                 self.screen.blit(overlay, (0, 0))
                 
-                winner_text = "🎉 YOU WIN! 🎉" if self.game.winner == 0 else f"AI ({self.opponent_type.upper()}) WINS!"
+                winner_text = "YOU WIN!" if self.game.winner == 0 else f"AI ({self.opponent_type.upper()}) WINS!"
                 win_color = (0, 255, 0) if self.game.winner == 0 else (255, 50, 50)
                 text = self.font.render(winner_text, True, win_color)
                 text_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
@@ -760,7 +661,7 @@ if __name__ == "__main__":
     print("- Click cards to play")
     print("- Click deck to draw (or draw pending cards)")
     print("- TRAIN AI: Quick training (1000 games)")
-    print("- CURRICULUM: Advanced training (5000 games)")
+    print("- CURRICULUM: Advanced training 4000 games)")
     print("- Q-VALUES: Toggle Q-value display")
     print("- OPPONENT: Switch AI types")
     print("\nStarting game...")
